@@ -1,11 +1,14 @@
-import './App.css';
-import ViewTitles from "./components/view-titles.js"
+import "./App.css";
+import ViewTitles from "./components/view-titles.js";
+import { GraphqlClientProvider } from "./contexts/api";
 
 function App() {
   return (
-    <div className="App">
-      <ViewTitles/>
-    </div>
+    <GraphqlClientProvider>
+      <div className="App">
+        <ViewTitles />
+      </div>
+    </GraphqlClientProvider>
   );
 }
 

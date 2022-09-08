@@ -1,48 +1,30 @@
-import { GraphQLClient } from "graphql-request";
 import { useEffect, useState } from "react";
-import { getRelatedTopicsByTopicName } from "./queries";
-
-const headers = {
-  authorization: "Bearer " + process.env.REACT_APP_API_BEARER_TOKEN,
-};
+import { getRelatedTopics } from "../api/topics";
+import { useGraphqlClient } from "../contexts/api";
 
 export const useRelatedTopics = (parentTopicName) => {
-  const endpoint = "https://api.github.com/graphql";
-
-  const client = new GraphQLClient(endpoint);
+  const client = useGraphqlClient();
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
   const [relatedTopics, setRelatedTopics] = useState([]);
 
-  const getRelatedTopics = async () => {
-    try {
-      setIsLoading(true);
-
-      const variables = {
-        topicName: parentTopicName,
-      };
-
-      const data = await client.request(
-        getRelatedTopicsByTopicName,
-        variables,
-        headers
-      );
-
-      setRelatedTopics(data.topic.relatedTopics);
-      setIsError(false);
-    } catch (error) {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (parentTopicName?.length) {
-      getRelatedTopics();
+      async function triggerApi() {
+        try {
+          setIsLoading(false);
+          setIsError(false);
+          const topics = await getRelatedTopics(parentTopicName, client);
+          setRelatedTopics(topics);
+        } catch (error) {
+          setIsError(true);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+      triggerApi();
     }
-    // eslint-disable-next-line
   }, [parentTopicName]);
 
   return {

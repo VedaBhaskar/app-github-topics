@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useRelatedTopics } from "../graphql/hooks";
+import { TopicListItem } from "./topic-list-item";
 
 const Container = styled.div`
   display: flex;
@@ -39,21 +40,18 @@ export default function ViewTitles() {
 
             {relatedTopics?.length > 0 ? (
               <>
-                {relatedTopics.map((eachRelatedTopic) => (
-                  <tr key={eachRelatedTopic.id}>
-                    <td>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          setCurrentTopic(eachRelatedTopic.name);
-                        }}
-                      >
-                        {eachRelatedTopic.name}
-                      </button>
-                    </td>
-                    <td>{eachRelatedTopic.stargazerCount}</td>
-                  </tr>
-                ))}
+                {relatedTopics.map((eachRelatedTopic) => {
+                  const { name, id, stargazerCount } = eachRelatedTopic;
+                  return (
+                    <TopicListItem
+                      key={id}
+                      {...{ name, stargazerCount }}
+                      onClick={() => {
+                        setCurrentTopic(eachRelatedTopic.name);
+                      }}
+                    />
+                  );
+                })}
               </>
             ) : (
               <tr>
